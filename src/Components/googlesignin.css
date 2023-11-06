@@ -1,0 +1,31 @@
+.google-sign-in-button {
+    display: flex;
+    align-items: center;
+  }
+  
+  .google-icon-wrapper {
+    background: white;
+    padding: 10px;
+    border-radius: 50%;
+  }
+  
+  .google-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .google-button {
+    background: #4285f4;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  /* Add hover styles if needed */
+  .google-button:hover {
+    background: #357ae8;
+  }
+  
