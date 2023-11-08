@@ -1,10 +1,10 @@
 import React from "react";
 import "./googlesignin.css";
-import { signinwithgoogle } from "../Firebase/firebaseConfig";
+// import { signinwithgoogle } from "../Firebase/firebaseConfig";
 const GoogleSignInBtn = () => {
   const googleSignIN = (e) => {
     e.preventDefault();
-    signinwithgoogle();
+    // signinwithgoogle();
   };
 
   return (
