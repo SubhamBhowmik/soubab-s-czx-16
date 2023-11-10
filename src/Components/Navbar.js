@@ -1,12 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useUser } from "../Context/UserContext";
+import ProfileDrawer from "./ProfileDrawer";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 const Navbar = () => {
+  const { user } = useUser();
+  const [authenticated, setauthenticated] = useState(false);
+  const history = useHistory();
+  console.log(user);
+  useEffect(() => {
+    // Check if user exists and has a mobile property
+    if (user && user.mobile !== null) {
+      setauthenticated(true);
+    }
+  }, [user]);
   return (
     <>
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <div className="container-fluid">
           <button
-            class="navbar-toggler"
+            className="navbar-toggler"
             type="button"
             data-mdb-toggle="collapse"
             data-mdb-target="#navbarSupportedContent"
@@ -14,11 +27,11 @@ const Navbar = () => {
             aria-expanded="false"
             aria-label="Toggle navigation"
           >
-            <i class="fas fa-bars"></i>
+            <i className="fas fa-bars"></i>
           </button>
 
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <a class="navbar-brand mt-2 mt-lg-0" href="#">
+          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <a className="navbar-brand mt-2 mt-lg-0" href="#">
               <img
                 src="https://mdbcdn.b-cdn.net/img/logo/mdb-transaprent-noshadows.webp"
                 height="15"
@@ -27,99 +40,110 @@ const Navbar = () => {
               />
             </a>
 
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link" href="#">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+              <li className="nav-item">
+                <a className="nav-link" href="#">
                   Dashboard
                 </a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
+              <li className="nav-item">
+                <a className="nav-link" href="#">
                   Team
                 </a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
+              <li className="nav-item">
+                <a className="nav-link" href="#">
                   Projects
                 </a>
               </li>
             </ul>
           </div>
 
-          <div class="d-flex align-items-center">
-            <a class="text-reset me-3" href="#">
-              <i class="fas fa-shopping-cart"></i>
+          <div className="d-flex align-items-center">
+            <a className="text-reset me-3" href="#">
+              <i className="fas fa-shopping-cart"></i>
             </a>
 
-            <div class="dropdown">
+            <div className="dropdown">
               <a
-                class="text-reset me-3 dropdown-toggle hidden-arrow"
+                className="text-reset me-3 dropdown-toggle hidden-arrow"
                 href="#"
                 id="navbarDropdownMenuLink"
                 role="button"
                 data-mdb-toggle="dropdown"
                 aria-expanded="false"
               >
-                <i class="fas fa-bell"></i>
-                <span class="badge rounded-pill badge-notification bg-danger">
+                <i className="fas fa-bell"></i>
+                <span className="badge rounded-pill badge-notification bg-danger">
                   1
                 </span>
               </a>
               <ul
-                class="dropdown-menu dropdown-menu-end"
+                className="dropdown-menu dropdown-menu-end"
                 aria-labelledby="navbarDropdownMenuLink"
               >
                 <li>
-                  <a class="dropdown-item" href="#">
+                  <a className="dropdown-item" href="#">
                     Some news
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#">
+                  <a className="dropdown-item" href="#">
                     Another news
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#">
+                  <a className="dropdown-item" href="#">
                     Something else here
                   </a>
                 </li>
               </ul>
             </div>
 
-            <div class="dropdown">
+            <div className="dropdown">
               <a
-                class="dropdown-toggle d-flex align-items-center hidden-arrow"
+                className="dropdown-toggle d-flex align-items-center hidden-arrow"
                 href="#"
                 id="navbarDropdownMenuAvatar"
                 role="button"
                 data-mdb-toggle="dropdown"
                 aria-expanded="false"
               >
+                {/*  */}
+
                 <img
                   src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
-                  class="rounded-circle"
-                  height="25"
-                  alt="Black and White Portrait of a Man"
-                  loading="lazy"
+                  alt=""
+                  className="rounded-circle"
+                  height={25}
+                  type="button"
+                  data-bs-toggle="offcanvas"
+                  data-bs-target="#offcanvasRight"
+                  aria-controls="offcanvasRight"
                 />
               </a>
               <ul
-                class="dropdown-menu dropdown-menu-end"
+                className="dropdown-menu dropdown-menu-end"
                 aria-labelledby="navbarDropdownMenuAvatar"
               >
                 <li>
-                  <a class="dropdown-item" href="#">
+                  <a
+                    className="dropdown-item "
+                    onClick={() => {
+                      history.push("/profile");
+                      window.location.reload();
+                    }}
+                  >
                     My profile
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#">
+                  <a className="dropdown-item" href="#">
                     Settings
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#">
+                  <a className="dropdown-item" href="#">
                     Logout
                   </a>
                 </li>

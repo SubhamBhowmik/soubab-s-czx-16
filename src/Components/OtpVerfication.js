@@ -1,22 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Redirect } from "react-router-dom";
 import firebase from "../Firebase/firebaseConfig";
 import "./otp.css";
-// import firebase, { auth, sendVerfication } from "../Firebase/firebaseConfig";
+import { useHistory } from "react-router-dom";
 import Navbar from "./Navbar";
+import { useUser } from "../Context/UserContext";
+import { postUserData } from "../api/api";
 
-const OtpVerfication = () => {
-  const [isnumbertaken, setisnumbertaken] = useState(false);
+const OtpVerification = () => {
+  const history = useHistory();
+  const [isNumberTaken, setIsNumberTaken] = useState(false);
   const [mobile, setMobile] = useState("");
-  const [phone, setphone] = useState("");
-
+  const [phone, setPhone] = useState("");
+  const [finalPhone, setFinalPhone] = useState("");
   const [otp, setOtp] = useState("");
+  const { user, updateUser } = useUser();
 
   const handleChange = (e) => {
-    setMobile(e.target.value); // Update the mobile state with the input's value
+    setMobile(e.target.value);
   };
 
   const handleChangeOTP = (e) => {
-    setOtp(e.target.value); // Update the mobile state with the input's value
+    setOtp(e.target.value);
   };
 
   const configureCaptcha = () => {
@@ -25,9 +30,8 @@ const OtpVerfication = () => {
       {
         size: "invisible",
         callback: (response) => {
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
           onSignInSubmit();
-          console.log("Recaptca varified");
+          console.log("reCAPTCHA verified");
         },
         defaultCountry: "IN",
       }
@@ -37,14 +41,12 @@ const OtpVerfication = () => {
   const onSignInSubmit = (e) => {
     e.preventDefault();
     configureCaptcha();
-    console.log("Mobile number submitted:", mobile);
     const phoneNumber = "+91" + mobile;
-    console.log(phoneNumber);
 
     if (phoneNumber.startsWith("+") && phoneNumber.length >= 12) {
-      setphone(
+      setPhone(
         phoneNumber.substr(0, 3) +
-          " " +
+          "XXXXXXXX" +
           phoneNumber.substr(phoneNumber.length - 2)
       );
     }
@@ -54,48 +56,62 @@ const OtpVerfication = () => {
       .auth()
       .signInWithPhoneNumber(phoneNumber, appVerifier)
       .then((confirmationResult) => {
-        // SMS sent. Prompt user to type the code from the message, then sign the
-        // user in with confirmationResult.confirm(code).
         window.confirmationResult = confirmationResult;
         console.log("OTP has been sent");
-        setisnumbertaken(true);
-        // ...
+        setIsNumberTaken(true);
+        setFinalPhone(phoneNumber);
       })
       .catch((error) => {
-        // Error; SMS not sent
-        // ...
-        console.log("SMS not sent");
+        console.error("SMS not sent:", error);
+        localStorage.clear();
+        alert("Please Try Again");
       });
   };
 
-  const onSubmitOTP = (e) => {
+  const onSubmitOTP = async (e) => {
     e.preventDefault();
 
-    console.log(otp);
-    window.confirmationResult
-      .confirm(otp)
-      .then((result) => {
-        // User signed in successfully.
-        const user = result.user;
-        console.log(JSON.stringify(user));
-        alert("User is verified");
-        // ...
-      })
-      .catch((error) => {
-        // User couldn't sign in (bad verification code?)
-        // ...
+    try {
+      const result = await window.confirmationResult.confirm(otp);
+      const resUser = result.user;
+      console.log(JSON.stringify(resUser));
+
+      updateUser({ mobile: finalPhone }, () => {
+        console.log(user, "updated from OTP verification");
       });
+
+      alert("User is verified");
+    } catch (error) {
+      console.error("Error during OTP verification:", error);
+    }
   };
+  const [redirect, setRedirect] = useState(false);
+  const [reload, setReload] = useState(false);
+  const submitData = async () => {
+    try {
+      if (user && user.mobile !== null) {
+        const res = await postUserData(user);
+        console.log(res, "response after posting user");
+        setRedirect(true);
+      }
+    } catch (error) {
+      console.error("Error posting user data:", error);
+    }
+  };
+
+  useEffect(() => {
+    submitData();
+  }, [user]);
 
   return (
     <>
       <Navbar />
 
-      {!isnumbertaken ? (
-        <div class=" d-flex justify-content-center align-items-center container">
-          <div class="card py-5 px-3 ">
-            <h5 class="m-0">OTP Verification</h5>
-            <span class="mobile-text mt-2">Enter the phone number</span>
+      {!isNumberTaken ? (
+        <div className="d-flex justify-content-center align-items-center container">
+          <div className="card py-5 px-3">
+            <h5 className="m-0">OTP Verification</h5>
+            <span className="mobile-text mt-2">Enter the phone number</span>
 
             <form onSubmit={onSignInSubmit}>
               <div id="sign-in-button"></div>
@@ -115,36 +131,49 @@ const OtpVerfication = () => {
                 Send Code
               </button>
             </form>
-            <div class="d-flex flex-row mt-3"></div>
+            <div className="d-flex flex-row mt-3"></div>
           </div>
         </div>
       ) : (
-        <div class=" d-flex justify-content-center align-items-center container">
-          <div class="card py-5 px-3 ">
-            <h5 class="m-0">Mobile phone verification</h5>
-            <span class="mobile-text">
-              Enter the code we just send on your mobile phone{" "}
-              <b class="text-danger">{phone}</b>
+        <div className="d-flex justify-content-center align-items-center container">
+          <div className="card py-5 px-3 shadow ripple">
+            <h5 className="m-0">Mobile phone verification</h5>
+            <span className="mobile-text mt-2">
+              Enter the code we just sent to your mobile phone{" "}
+              <b className="text-danger">{phone}</b>
             </span>
-            <div class="d-flex flex-row mt-5">
+            <div className="mt-5 d-flex justify-content-center">
               <form onSubmit={onSubmitOTP}>
                 <div id="sign-in-button"></div>
-                <input
-                  type="number"
-                  name="otp"
-                  value={otp}
-                  placeholder="Mobile number"
-                  required
-                  onChange={handleChangeOTP}
-                />
-                <button
-                  type="submit"
-                  className="font-weight-bold text-danger cursor"
-                  variant="contained"
-                  sx={{ width: "240px", marginTop: "20px" }}
-                >
-                  Verify
-                </button>
+
+                <div className="input-group mb-3">
+                  <div className="input-group-prepend">
+                    <span className="input-group-text" id="basic-addon1">
+                      +91
+                    </span>
+                  </div>
+                  <input
+                    type="text"
+                    className="form-control shadow"
+                    name="otp"
+                    value={otp}
+                    placeholder="Enter OTP"
+                    required
+                    aria-label="otp"
+                    aria-describedby="basic-addon1"
+                    onChange={handleChangeOTP}
+                  />
+                </div>
+                <div className="d-flex justify-content-center py-5">
+                  <button
+                    className="text-danger cursor center btn btn-light ripple shadow"
+                    variant="contained"
+                    sx={{ width: "240px", marginTop: "20px" }}
+                    type="submit"
+                  >
+                    Verify
+                  </button>
+                </div>
               </form>
             </div>
           </div>
@@ -154,4 +183,4 @@ const OtpVerfication = () => {
   );
 };
 
-export default OtpVerfication;
+export default OtpVerification;

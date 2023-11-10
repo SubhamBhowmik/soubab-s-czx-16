@@ -1,10 +1,42 @@
 import React from "react";
 import "./googlesignin.css";
+import firebase from "../Firebase/firebaseConfig";
+import { useUser } from "../Context/UserContext";
+import { useHistory } from "react-router-dom";
+import { postUserData } from "../api/api";
+
 // import { signinwithgoogle } from "../Firebase/firebaseConfig";
 const GoogleSignInBtn = () => {
-  const googleSignIN = (e) => {
+  const history = useHistory();
+  const { user, updateUser } = useUser();
+  console.log(user);
+  const googleSignIN = async (e) => {
     e.preventDefault();
-    // signinwithgoogle();
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    try {
+      const result = await firebase.auth().signInWithPopup(provider);
+      const userD = result.user;
+      const name = userD.displayName;
+      const email = userD.email;
+      const img = userD.photoURL;
+      const mobile = userD.phoneNumber;
+
+      console.log(userD, "data received");
+
+      updateUser({ name, email, img, mobile }, () => {
+        // Log the updated user information
+        console.log(user);
+      });
+
+      console.log("Successfully signed in with Google");
+      postUserData({ name, email, img, mobile });
+
+      history.push("/otp-verification");
+      window.location.reload();
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+    }
   };
 
   return (
