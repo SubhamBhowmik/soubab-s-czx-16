@@ -10,11 +10,14 @@ import { postUserData } from "../api/api";
 const OtpVerification = () => {
   const history = useHistory();
   const [isNumberTaken, setIsNumberTaken] = useState(false);
+  const [formtype, setformtype] = useState("1st");
+  console.log(formtype);
   const [mobile, setMobile] = useState("");
   const [phone, setPhone] = useState("");
   const [finalPhone, setFinalPhone] = useState("");
   const [otp, setOtp] = useState("");
   const { user, updateUser } = useUser();
+  const { updateProfileId } = useUser();
 
   const handleChange = (e) => {
     setMobile(e.target.value);
@@ -58,7 +61,7 @@ const OtpVerification = () => {
       .then((confirmationResult) => {
         window.confirmationResult = confirmationResult;
         console.log("OTP has been sent");
-        setIsNumberTaken(true);
+        setformtype("2nd");
         setFinalPhone(phoneNumber);
       })
       .catch((error) => {
@@ -81,6 +84,7 @@ const OtpVerification = () => {
       });
 
       alert("User is verified");
+      setformtype("3rd");
     } catch (error) {
       console.error("Error during OTP verification:", error);
     }
@@ -92,6 +96,9 @@ const OtpVerification = () => {
       if (user && user.mobile !== null) {
         const res = await postUserData(user);
         console.log(res, "response after posting user");
+        updateProfileId(res);
+        // localStorage.setItem("profileId", res);
+        // dispatch({ type: "UPDATE_PROFILE_ID", payload: res });
         setRedirect(true);
       }
     } catch (error) {
@@ -107,76 +114,89 @@ const OtpVerification = () => {
     <>
       <Navbar />
 
-      {!isNumberTaken ? (
-        <div className="d-flex justify-content-center align-items-center container">
-          <div className="card py-5 px-3">
-            <h5 className="m-0">OTP Verification</h5>
-            <span className="mobile-text mt-2">Enter the phone number</span>
+      {formtype === "1st" && (
+        <div>
+          {" "}
+          <div className="d-flex justify-content-center align-items-center container">
+            <div className="card py-5 px-3">
+              <h5 className="m-0">OTP Verification</h5>
+              <span className="mobile-text mt-2">Enter the phone number</span>
 
-            <form onSubmit={onSignInSubmit}>
-              <div id="sign-in-button"></div>
-              <input
-                type="number"
-                name="mobile"
-                value={mobile}
-                placeholder="Mobile number"
-                required
-                onChange={handleChange}
-              />
-              <button
-                type="submit"
-                variant="contained"
-                sx={{ width: "240px", marginTop: "20px" }}
-              >
-                Send Code
-              </button>
-            </form>
-            <div className="d-flex flex-row mt-3"></div>
-          </div>
-        </div>
-      ) : (
-        <div className="d-flex justify-content-center align-items-center container">
-          <div className="card py-5 px-3 shadow ripple">
-            <h5 className="m-0">Mobile phone verification</h5>
-            <span className="mobile-text mt-2">
-              Enter the code we just sent to your mobile phone{" "}
-              <b className="text-danger">{phone}</b>
-            </span>
-            <div className="mt-5 d-flex justify-content-center">
-              <form onSubmit={onSubmitOTP}>
+              <form onSubmit={onSignInSubmit}>
                 <div id="sign-in-button"></div>
-
-                <div className="input-group mb-3">
-                  <div className="input-group-prepend">
-                    <span className="input-group-text" id="basic-addon1">
-                      +91
-                    </span>
-                  </div>
-                  <input
-                    type="text"
-                    className="form-control shadow"
-                    name="otp"
-                    value={otp}
-                    placeholder="Enter OTP"
-                    required
-                    aria-label="otp"
-                    aria-describedby="basic-addon1"
-                    onChange={handleChangeOTP}
-                  />
-                </div>
-                <div className="d-flex justify-content-center py-5">
-                  <button
-                    className="text-danger cursor center btn btn-light ripple shadow"
-                    variant="contained"
-                    sx={{ width: "240px", marginTop: "20px" }}
-                    type="submit"
-                  >
-                    Verify
-                  </button>
-                </div>
+                <input
+                  type="number"
+                  name="mobile"
+                  value={mobile}
+                  placeholder="Mobile number"
+                  required
+                  onChange={handleChange}
+                />
+                <button
+                  type="submit"
+                  variant="contained"
+                  sx={{ width: "240px", marginTop: "20px" }}
+                >
+                  Send Code
+                </button>
               </form>
+              <div className="d-flex flex-row mt-3"></div>
             </div>
           </div>
+        </div>
+      )}
+      {formtype === "2nd" && (
+        <div>
+          {" "}
+          <div className="d-flex justify-content-center align-items-center container">
+            <div className="card py-5 px-3 shadow ripple">
+              <h5 className="m-0">Mobile phone verification</h5>
+              <span className="mobile-text mt-2">
+                Enter the code we just sent to your mobile phone{" "}
+                <b className="text-danger">{phone}</b>
+              </span>
+              <div className="mt-5 d-flex justify-content-center">
+                <form onSubmit={onSubmitOTP}>
+                  <div id="sign-in-button"></div>
+
+                  <div className="input-group mb-3">
+                    <div className="input-group-prepend">
+                      <span className="input-group-text" id="basic-addon1">
+                        +91
+                      </span>
+                    </div>
+                    <input
+                      type="text"
+                      className="form-control shadow"
+                      name="otp"
+                      value={otp}
+                      placeholder="Enter OTP"
+                      required
+                      aria-label="otp"
+                      aria-describedby="basic-addon1"
+                      onChange={handleChangeOTP}
+                    />
+                  </div>
+                  <div className="d-flex justify-content-center py-5">
+                    <button
+                      className="text-danger cursor center btn btn-light ripple shadow"
+                      variant="contained"
+                      sx={{ width: "240px", marginTop: "20px" }}
+                      type="submit"
+                    >
+                      Verify
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {formtype === "3rd" && (
+        <div className="container ">
+          <h5>User Login Successful</h5>
+          <a href="/">Go Back to Home</a>
         </div>
       )}
     </>

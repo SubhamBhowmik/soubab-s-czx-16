@@ -7,6 +7,7 @@ import OtpVerfication from "./Components/OtpVerfication";
 import PhoneAuth from "./Components/PhoneAuth";
 import ProfileDrawer from "./Components/ProfileDrawer";
 import MyProfilePage from "./Components/MyProfilePage";
+import Tour from "./Pages/Tour";
 function App() {
   return (
     <>
@@ -15,7 +16,8 @@ function App() {
           <Route path="/" exact component={Welcome} />
           <Route path="/otp-verification" exact component={OtpVerfication} />
           {/* <Route path="/demo" exact component={ProfileDrawer} /> */}
-          <Route path="/profile" component={MyProfilePage} />
+          <Route path="/profile" component={ProfileDrawer} />
+          <Route path="/tour" component={Tour} />
 
           {/* Add more routes here */}
         </Switch>

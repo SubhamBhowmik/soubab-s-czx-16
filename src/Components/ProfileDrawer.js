@@ -5,32 +5,66 @@ const ProfileDrawer = () => {
   const { user } = useUser();
   const data = JSON.stringify(user);
 
+  const info = {
+    name: "Subham Bhowmik",
+    email: "czsubham@gmail.com",
+    img: "https://lh3.googleusercontent.com/a/ACg8ocJ7KKHvxpn8ujvO-bh-0Vgd5dThRlaghN99uSpX-ZaQVp4=s96-c",
+    mobile: "98768999",
+  };
+
   return (
     <>
-      {/* <img
-        src={user.img}
-        alt=""
-        className="rounded-circle"
-        height={25}
-        type="button"
-        data-bs-toggle="offcanvas"
-        data-bs-target="#offcanvasRight"
-        aria-controls="offcanvasRight"
-      /> */}
-
-      <div class="btn-group dropleft">
+      <nav class="navbar navbar-dark bg-dark fixed-top">
         <div
-          class="dropdown-toggle"
-          data-toggle="dropdown"
-          aria-haspopup="false"
-          aria-expanded="false"
+          class="navbar-toggler"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasDarkNavbar"
+          aria-controls="offcanvasDarkNavbar"
+          aria-label="Toggle navigation"
         >
-          Login
+          <div>clcik here </div>
         </div>
-        <div class="dropdown-menu">
-          <GoogleSignInBtn />
+        <div
+          class="offcanvas offcanvas-end text-bg-dark"
+          tabindex="-1"
+          id="offcanvasDarkNavbar"
+          aria-labelledby="offcanvasDarkNavbarLabel"
+        >
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">
+              Welcome {info.name}
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="offcanvas-body">
+            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+              <li>
+                <div class="d-flex justify-content-center rounded-circle">
+                  <img src={info.img} alt="" style={{ borderRadius: "50%" }} />
+                </div>
+              </li>
+              <li class="nav-item">
+                <div class="nav-link " aria-current="page" href="#">
+                  Email : {info.email}
+                </div>
+              </li>
+              <li class="nav-item">
+                <div class="nav-link" href="#">
+                  Contact No: {info.mobile}
+                </div>
+              </li>
+            </ul>
+            <button class="btn btn-success" type="submit">
+              Edit
+            </button>
+          </div>
         </div>
-      </div>
+      </nav>
     </>
   );
 };
